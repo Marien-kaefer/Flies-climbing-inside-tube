@@ -24,7 +24,7 @@ o	A dialog window will pop up requesting to draw a rectangle around the tube con
 -	Subtract Background to only keep objects that are ~ the size of the flies. Use rolling ball approach with a radius of 15. 
 -	Save pre-processed stack.
 -	Close all image files. You can find the exports in the specified output folder. 
-<img src="https://github.com/Marien-kaefer/Flies-climbing-inside-tube/blob/main/raw-pre-processing-comparison.jpg?"  width="60%" >
+<p style="text-align:center;"><img src="https://github.com/Marien-kaefer/Flies-climbing-inside-tube/blob/main/raw-pre-processing-comparison.jpg?"  width="60%" ></p>
 
 # Tracking with TrackMate
 
