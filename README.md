@@ -15,7 +15,7 @@ As this would be a repetitive task, a macro has been written that performs the f
 	3.	File name for the video/pre-processed stack, can be experiment name. Ideally without spaces, or special characters. Stick to letters, numbers dashes and underscores only. 
 	4.	Video frame rate - typically 24 or 30 fps but do check with the phone manufacturer. 
 	5.	The number of pixels that equates to a length of 2 cm. In the original video there are markings on the tube. Measure multiple, different 2 cm distances using the line tool and average the numbers. Add the average value in the relevant dialog entry box. 
-	6.  <img src="https://github.com/Marien-kaefer/Flies-climbing-inside-tube/blob/main/readme_images/dialogbox.PNG?"  width="60%" ></p>
+	6.  <img src="https://github.com/Marien-kaefer/Flies-climbing-inside-tube/blob/main/readme_images/dialogbox.PNG?"  width="80%" ></p>
 -	The macro opens the image sequence as stack. 
 -	Swap z and t so that the stack is recognised as a time series rather than a z-stack. 
 -	Apply calibrations in xy and time based on the values provided in the dialog box (number of pixels equating to a distance of 2 cm, video frame rate).
