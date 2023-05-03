@@ -35,6 +35,7 @@ originalTitle = generate_stack_and_save(input, originalTitle, output, videoFrame
 originalName = file_name_remove_extension(originalTitle); 
 pre_processing(originalTitle, output, originalName); 
 clean_up();
+beep(); 
 
 
 

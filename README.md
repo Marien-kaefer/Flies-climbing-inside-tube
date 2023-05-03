@@ -31,6 +31,8 @@ As this would be a repetitive task, a macro has been written that performs the f
 
 Some optimisation might be required as this workflow is based on one video only. 
 
+To use the macro, open the .ijm file in Fiji, e.g. by dragging and dropping onto the Fiji main window. The script editor will open. Then click run at the bottom left of the script editor, provide the requested directories and parameters and click ok. When prompted, draw a rectangular region of interest around the tube/part of the tube and click OK. The marco will finish with an audible beep. 
+
 <p style="text-align:center;"><img src="https://github.com/Marien-kaefer/Flies-climbing-inside-tube/blob/main/readme_images/raw-pre-processing-comparison.jpg?"  width="60%" ></p>
 
 # Tracking with TrackMate
