@@ -3,9 +3,41 @@ The aim of the analysis is to track flies climbing the walls on the inside of a 
 2. Pre-processing of the video. 
 3. Tracking of the flies using Trackmate. 
 
+
+# Software used
+**1. FFMPEG**
+
+FFMPEG is a universal media converter that can read a variety of inputs, filter and transcode them into various output formats.
+
+**2. Fiji **
+
+Fiji is a ‘batteries included’ version of the image processing software ImageJ. It comes bundled with plugins suited to imaging and microscopy. Get it from http://fiji.sc , unzip the archive and run the main executable (ImageJ-win64.exe). 
+
+**3. Fiji Macros**
+
+Download the relevant macros from the public Github repository: https://github.com/Marien-kaefer/Flies-climbing-inside-tube 
+
+
 # Video conversion to Tiff sequence
 Convert movies from mov to tiff sequence via https://mconverter.eu/convert/mov/tiff/ 
-Drag and drop .mov file for conversion. Select .tiff. Download as .zip and extract into a folder or download individual files (much slower). 
+Drag and drop .mov file for conversion. Select .tiff. Download as .zip and extract into a folder or download individual files (much slower). This option will only work for videos that are <100 MB. 
+
+For videos larger than 100MB, use FFMPEG: FFMPEG Installation (please note that you will require admin rights on your PC to change environment variables): https://www.youtube.com/watch?v=OspDzkCKFKE&t=189s 
+Once FFMPEG has been installed and verified as described in the youtube video above, use the command line prompt to navigate to the folder containing the images. See here for an post of the command line prompts required to navigate the PC drive and folder structure. 
+
+Overview over an FFMPEG command: ffmpeg [options] [[infile options] -i infile]… {[outfile options] outfile}…
+
+Once in the folder that contains the video(s) type the following command (for more info see here): 
+ffmpeg -i IMG_3685.mov -pix_fmt rgba IMG_3685_stills_%04d.tif
+
+<style="color:orange;">Word up</span>
+
+input file name
+set pixel format to rgba 
+output file name and type (tif), the “%04d” specifies the position of the characters representing a sequential number in each file name matched by the pattern. Using the above example the output files will be called IMG_3685_stills_0001.png, IMG_3685_stills _0002.png, IMG_3685_stills _0002.png and so on. For longer videos you will need to use a higher number (%08d.tif). 
+
+The output files will be written into the same directory as the input files unless a different directory is specified in the command above. Press enter to start the conversion. There wil be various parameters of the video displayed and the last line gives an update on the exported frames: 
+
 
 # Pre-processing
 As this would be a repetitive task, a macro has been written that performs the following steps automatically: 
