@@ -30,40 +30,52 @@ Overview over an FFMPEG command: ffmpeg [options] [[infile options] -i infile]�
 Once in the folder that contains the video(s) type the following command (for more info see here): 
 ffmpeg -i IMG_3685.mov -pix_fmt rgba IMG_3685_stills_%04d.tif
 
-<style="color:orange;">Word up</span>
 
-input file name
-set pixel format to rgba 
-output file name and type (tif), the “%04d” specifies the position of the characters representing a sequential number in each file name matched by the pattern. Using the above example the output files will be called IMG_3685_stills_0001.png, IMG_3685_stills _0002.png, IMG_3685_stills _0002.png and so on. For longer videos you will need to use a higher number (%08d.tif). 
+* "IMG_3685.mov" - input file name
+* "-pix_fmt rgba" - set pixel format to rgba 
+* "IMG_3685_stills_%04d.tif" - output file name and type (tif), the “%04d” specifies the position of the characters representing a sequential number in each file name matched by the pattern. Using the above example the output files will be called IMG_3685_stills_0001.png, IMG_3685_stills _0002.png, IMG_3685_stills _0002.png and so on. For longer videos you will need to use a higher number (%08d.tif). 
 
-The output files will be written into the same directory as the input files unless a different directory is specified in the command above. Press enter to start the conversion. There wil be various parameters of the video displayed and the last line gives an update on the exported frames: 
+The output files will be written into the same directory as the input files unless a different directory is specified in the command above. Press enter to start the conversion. There wil be various parameters of the video displayed and the last line gives an update on the exported frames. Once the conversion has finished, the command line is ready to receive the next command, e.g. to convert the next video. When done, close the command line prompt. 
+
 
 
 # Pre-processing
-As this would be a repetitive task, a macro has been written that performs the following steps automatically: 
--	User dialog requesting 
-	1.	input directory – folder that contains the video stills, only save one video in a folder
-	2.	output directory – where to save the output files to. The output files are all video stills put together in a tif stack and the pre-processed stack ready for tracking
-	3.	File name for the video/pre-processed stack, can be experiment name. Ideally without spaces, or special characters. Stick to letters, numbers dashes and underscores only. 
-	4.	Video frame rate - typically 24 or 30 fps but do check with the phone manufacturer. 
-	5.	The number of pixels that equates to a length of 2 cm. In the original video there are markings on the tube. Measure multiple, different 2 cm distances using the line tool and average the numbers. Add the average value in the relevant dialog entry box. 
-	6.  <img src="https://github.com/Marien-kaefer/Flies-climbing-inside-tube/blob/main/readme_images/dialogbox.PNG?"  width="80%" ></p>
--	The macro opens the image sequence as stack. 
+
+Open an image of the stack and use the line too to measure the length (pixels) equating to a 2 cm length in the image, e.g. between two markings separated by 2 cm. Once the line has been drawn, type [m] to measure the length. The measurement is displayed in a Results window. Draw several more lines in different areas of the image and measure those and then calculate the average of those measurements. This should be repeated for each video as the distance of the tubes from the video recording device impacts the calibration. 
+
+<p style="text-align:center;"><img src="https://github.com/Marien-kaefer/Flies-climbing-inside-tube/blob/main/readme_images/flies-spatial-calibration.jpg?"  width="60%" ></p>
+
+Ensure to use a PC with sufficient memory to load the image sequences. Check total size of the tiff sequence via file explorer properties to estimate the amount of RAM required. 
+
+The macro preprocessing_for_tracking.ijm has been written that performs the following steps automatically: 
+-	User dialog requesting the following:
+	1.	<img src="https://github.com/Marien-kaefer/Flies-climbing-inside-tube/blob/main/readme_images/dialogbox.PNG?"  width="80%" ></p>
+	2.	Input directory – folder that contains the video stills, only save one video in a folder
+	3.	Output directory – where to save the output files to. The output files are all video stills put together in a calibrated tif stack and the pre-processed stack ready for tracking
+	4.	File name for the video/pre-processed stack, can be experiment name. Ideally without spaces, or special characters. It is best practice to use letters, numbers dashes, and underscores only. 
+	5.	Video frame rate - typically 30 or 60 fps but do check with the phone manufacturer. 
+	6.	The number of pixels that equates to a length of 2 cm. In the original video there are markings on the tube. Measure multiple, different 2 cm distances using the line tool and average the numbers as described above. Add the average value in the relevant dialog entry box. 
+
+-	The macro opens image sequence as stack. Depending on the number of images in the sequence this process might take some time. There is a progress bar visible in the Fiji  main window.
 -	Swap z and t so that the stack is recognised as a time series rather than a z-stack. 
--	Apply calibrations in xy and time based on the values provided in the dialog box (number of pixels equating to a distance of 2 cm, video frame rate).
--	Save calibrated video stills stack. 
--	Crop. 
-	*	A dialog window will pop up requesting to draw a rectangle around the tube containing the flies. Cropping out surplus pixels vastly increases processing time. Once the rectangle has been drawn, click [OK].
--	Convert to 8 bit
--	Invert grey values.
--	Generate average intensity image and then subtract this from each time point. This will remove static background in the image (e.g. writing, tube, etc.).
--	Subtract Background to only keep objects that are ~ the size of the flies. Use rolling ball approach with a radius of 15. 
--	Save pre-processed stack.
--	Close all image files. You can find the exports in the specified output folder. 
+-	Apply calibrations in xy and time based on the values provided in the dialog box - number of pixels equating to a distance of 2 cm, video frame rate. 
+-	There will be another dialog popup window containing the following message: “Please browse the time series and make a note of the start and end frame to be considered for analysis. You will be asked to put in the numbers in the next Dialog.” It is recommended to identify the frame where the tubes have been tapped onto the workbench and are now stationary. Make a note of the beginning and end frames to be used for analysis. 
+-	The following dialog box now requests entry of the start and end frame to be considered for analysis. By default, this is set to the whole time series so please adapt accordingly. This dialog does not allow browsing of the time series compared to the previous dialog box which is why this is a two-step process.  
+-	The calibrated tif stack will be saved in the specified output folder. 
+-	Pre-processing steps:
+	-	Crop.
+		*	A dialog window will pop up requesting to draw a rectangle around the are of interest, e.g. the tube containing the flies. Cropping out surplus pixels vastly decreases processing time. Once the rectangle has been drawn, click [OK]. 
+	-	Convert to 8 bit.
+	-	Invert grey values. 
+	-	Generate average intensity image and then subtract this from each time point. This will remove static background in the image (e.g. writing, tube, etc.).
+	-	Subtract Background to only keep objects that are ~ the size of the flies. Use rolling ball approach with a radius of 15. 
+	-	Save pre-processed stack.
+-	Option to repeat processing, e.g. for another tube where multiple tubes are in the video. As long as “Yes” is selected, the above point is repeated. Multiple files will be saved as “outputName_n” with n increasing sequentially. Once all crops have been generated select “No”. 
+-	The macro automatically closes all image files. The exports can be found in the specified output folder. 
 
-Some optimisation might be required as this workflow is based on one video only. 
+Some optimisation might be required. 
 
-To use the macro, open the .ijm file in Fiji, e.g. by dragging and dropping onto the Fiji main window. The script editor will open. Then click run at the bottom left of the script editor, provide the requested directories and parameters and click ok. When prompted, draw a rectangular region of interest around the tube/part of the tube and click OK. The marco will finish with an audible beep. 
+To use the macro, open the .ijm file in Fiji, e.g. by dragging and dropping onto the Fiji main window. The script editor will open. Then click run at the bottom left of the script editor, provide the requested directories and parameters and click [OK]. When prompted, provide parameters or draw a rectangular region of interest around the tube/part of the tube and click OK. The macro will finish with an audible beep. 
 
 <p style="text-align:center;"><img src="https://github.com/Marien-kaefer/Flies-climbing-inside-tube/blob/main/readme_images/raw-pre-processing-comparison.jpg?"  width="60%" ></p>
 
