@@ -1,5 +1,5 @@
 /*
-The aim of the macro is convert a video recorded with a mobile phone and pre-process it to allow tracking of flies over time. 
+The aim of the macro is convert a tiff sequence generated from a video recorded with a mobile phone and pre-process it to allow tracking of flies over time in TrackMate. 
 
 The macro provides the second step of the full workflow containing three parts:
 1. Video conversion from .mov to a sequence of tiff files.
@@ -25,35 +25,54 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #@ File (label = "Input directory containing video stills", style = "directory") input
 #@ File (label = "Output directory", style = "directory") output
-#@ String (label = "File Name: ", value = "Video stills", persist=false) originalTitle
-#@ Integer (label = "Frame rate: ", value = 24, persist=true) videoFrameRate
+#@ String (label = "File Name: ", value = "Video-stills", persist=false) originalTitle
+#@ Integer (label = "Frame rate: ", value = 60, persist=true) videoFrameRate
 #@ Double (label = "Number of pixels equating to 2 cm in length: ",  persist=true) xy_calibration_cm
 
 
-
-originalTitle = generate_stack_and_save(input, originalTitle, output, videoFrameRate, xy_calibration_cm); 
+n = 1; 
+originalTitle = generate_stack_and_save(input, output, originalTitle, videoFrameRate, xy_calibration_cm); 
 originalName = file_name_remove_extension(originalTitle); 
-pre_processing(originalTitle, output, originalName); 
+crop_choice_answer = pre_processing(originalTitle, output, originalName, n);
+repeat_process(crop_choice_answer); 
 clean_up();
 beep(); 
 
 
-
-function generate_stack_and_save(input, originalTitle, output, videoFrameRate, xy_calibration_cm){
+//------------------------- FUNCTIONS -------------------------//
+function generate_stack_and_save(input, output, originalTitle, videoFrameRate, xy_calibration_cm){
 	interval = 1 / videoFrameRate; 
 	xy_calibration = 20 / xy_calibration_cm;
 	File.openSequence(input);
+	rename(originalTitle); 
 	Stack.getDimensions(width, height, channels, slices, frames);
+	selectWindow(originalTitle); 
 	Stack.setXUnit("mm");
-	run("Properties...", "channels=1 slices=1 frames=slices pixel_width=" + xy_calibration + " pixel_height=" + xy_calibration + " voxel_depth=1.0000 [frame = " + interval +" sec]");
+	run("Properties...", "channels=1 slices=" + frames + " frames=" + slices + " pixel_width=" + xy_calibration + " pixel_height=" + xy_calibration + " voxel_depth=1.0000 frame=[" + interval +" sec]");
+
+	waitForUser("Please browse the time series and make a note of the start and end frame to be considered for analysis. " + "\n" + "You will be asked to put in the numbers in the next Dialog.");
+	Dialog.create("Start and end frames?");
+	Dialog.addMessage("Please enter the start and end frames of the time series that you want to be considered for analysis.");
+	Dialog.addNumber("Start frame", 1);
+	Dialog.addNumber("End frame", slices);	Dialog.show();
+	startFrame = Dialog.getNumber();
+	endFrame = Dialog.getNumber();
+	run("Make Substack...", "slices=" + startFrame + "-" + endFrame);
+	//run("Duplicate...", "duplicate range=" + startFrame + "-" + endFrame);
+	image_ID = getImageID();
+	selectWindow(originalTitle);
+	close();
+	selectImage(image_ID);
+	rename(originalTitle);
+
 	saveAs("Tiff", output + File.separator + originalTitle + ".tif");
 	originalTitle = getTitle(); 
 	return originalTitle; 
 }
 
-function pre_processing(originalTitle, output, originalName){
+function pre_processing(originalTitle, output, originalName, n){
 	selectWindow(originalTitle);
-	
+	setTool("rectangle");
 	waitForUser("Please use the rectangle tool to crop out the tube only for measurements. " + "\n" + "Cropping will significantly reduce the processig time and file size.");
 	
 	run("Duplicate...", "duplicate");
@@ -71,7 +90,28 @@ function pre_processing(originalTitle, output, originalName){
 	selectWindow(ResultsTitle);
 	run("Subtract Background...", "rolling=15 stack");
 	run("Enhance Contrast", "saturated=0.35");
-	saveAs("Tiff", output + File.separator + originalName + "-preprocessed.tif");
+	saveAs("Tiff", output + File.separator + originalName + "-preprocessed_" + n + ".tif");
+	
+	selectWindow(duplicateTitle);
+	close(); 
+	selectWindow(ZProjectTitle);
+	close(); 
+	selectWindow(originalName + "-preprocessed_" + n + ".tif");
+	close(); 
+	
+	crop_option = newArray("Yes", "No");
+	Dialog.create("Repeat crop?");
+	Dialog.addRadioButtonGroup("Crop another region of interest? ", crop_option, 1, 2, crop_option[0]);
+	Dialog.show();
+	crop_choice_answer = Dialog.getRadioButton();
+	return crop_choice_answer;
+}
+
+function repeat_process(crop_choice_answer){
+	while (crop_choice_answer == "Yes") {
+		n += 1 ; 
+		crop_choice_answer = pre_processing(originalTitle, output, originalName, n); 
+	}
 }
 
 function clean_up(){
