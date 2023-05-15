@@ -3,7 +3,6 @@ The aim of the analysis is to track flies climbing the walls on the inside of a 
 2. Pre-processing of the video. 
 3. Tracking of the flies using Trackmate. 
 
-
 # Software used
 **1. FFMPEG**
 
@@ -30,20 +29,17 @@ Overview over an FFMPEG command: ffmpeg [options] [[infile options] -i infile]�
 Once in the folder that contains the video(s) type the following command (for more info see here): 
 ffmpeg -i IMG_3685.mov -pix_fmt rgba IMG_3685_stills_%04d.tif
 
-
 * "IMG_3685.mov" - input file name
 * "-pix_fmt rgba" - set pixel format to rgba 
 * "IMG_3685_stills_%04d.tif" - output file name and type (tif), the “%04d” specifies the position of the characters representing a sequential number in each file name matched by the pattern. Using the above example the output files will be called IMG_3685_stills_0001.png, IMG_3685_stills _0002.png, IMG_3685_stills _0002.png and so on. For longer videos you will need to use a higher number (%08d.tif). 
 
 The output files will be written into the same directory as the input files unless a different directory is specified in the command above. Press enter to start the conversion. There wil be various parameters of the video displayed and the last line gives an update on the exported frames. Once the conversion has finished, the command line is ready to receive the next command, e.g. to convert the next video. When done, close the command line prompt. 
 
-
-
 # Pre-processing
 
 Open an image of the stack and use the line too to measure the length (pixels) equating to a 2 cm length in the image, e.g. between two markings separated by 2 cm. Once the line has been drawn, type [m] to measure the length. The measurement is displayed in a Results window. Draw several more lines in different areas of the image and measure those and then calculate the average of those measurements. This should be repeated for each video as the distance of the tubes from the video recording device impacts the calibration. 
 
-<p style="text-align:center;"><img src="https://github.com/Marien-kaefer/Flies-climbing-inside-tube/blob/main/readme_images/flies-spatial-calibration.jpg?"  width="60%" ></p>
+<p style="text-align:center;"><img src="https://github.com/Marien-kaefer/Flies-climbing-inside-tube/blob/main/readme_images/flies-spatial-calibration.jpg?"  width="40%" ></p>
 
 Ensure to use a PC with sufficient memory to load the image sequences. Check total size of the tiff sequence via file explorer properties to estimate the amount of RAM required. 
 
