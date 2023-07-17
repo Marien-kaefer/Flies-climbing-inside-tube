@@ -73,7 +73,7 @@ function generate_stack_and_save(input, output, originalTitle, videoFrameRate, x
 function pre_processing(originalTitle, output, originalName, n){
 	selectWindow(originalTitle);
 	setTool("rectangle");
-	waitForUser("Please use the rectangle tool to crop out the tube only for measurements. " + "\n" + "Cropping will significantly reduce the processig time and file size.");
+	waitForUser("Please use the rectangle tool to crop out the area of interest for measurements. " + "\n" + "Cropping will significantly reduce the processig time and file size.");
 	
 	run("Duplicate...", "duplicate");
 	duplicateTitle = getTitle();
