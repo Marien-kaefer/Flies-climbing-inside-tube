@@ -26,11 +26,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #@ File (label = "Input directory containing video stills", style = "directory") input
 #@ File (label = "Output directory", style = "directory") output
 #@ String (label = "File Name: ", value = "Video-stills", persist=false) originalTitle
+#@ Integer (label = "BG Subtraction rolling ball radius (px; > fly 'diameter'): ", value = 15, persist=true) rollingBallRadius
+#@ String(label = "Subtract average image? ", choices={"Yes","No"}, style="radioButtonHorizontal") subtractSeriesAverageChoice
 #@ Integer (label = "Frame rate: ", value = 60, persist=true) videoFrameRate
 #@ Double (label = "Number of pixels equating to 2 cm in length: ",  persist=true) xy_calibration_cm
 
 
-n = 1; 
+n = 0; 
 originalTitle = generate_stack_and_save(input, output, originalTitle, videoFrameRate, xy_calibration_cm); 
 originalName = file_name_remove_extension(originalTitle); 
 crop_choice_answer = pre_processing(originalTitle, output, originalName, n);
@@ -80,24 +82,34 @@ function pre_processing(originalTitle, output, originalName, n){
 	
 	//run("Brightness/Contrast...");
 	resetMinAndMax();
-	run("8-bit");
+	if (bitDepth() != 8) {
+		run("8-bit");
+	}
 	run("Invert", "stack");
-	run("Z Project...", "projection=[Average Intensity]");
-	ZProjectTitle = getTitle();
 	
-	imageCalculator("Subtract create 32-bit stack", duplicateTitle, ZProjectTitle);
-	ResultsTitle = getTitle();
-	selectWindow(ResultsTitle);
-	run("Subtract Background...", "rolling=15 stack");
+	if (subtractSeriesAverageChoice == "Yes") {
+		run("Z Project...", "projection=[Average Intensity]");
+		ZProjectTitle = getTitle();
+		
+		imageCalculator("Subtract create 32-bit stack", duplicateTitle, ZProjectTitle);
+		ResultsTitle = getTitle();
+		selectWindow(ZProjectTitle);
+		close(); 
+		selectWindow(ResultsTitle);
+	} 
+	else{
+		selectWindow(duplicateTitle); 
+	}
+	run("Subtract Background...", "rolling=" + rollingBallRadius + " stack");
 	run("Enhance Contrast", "saturated=0.35");
 	saveAs("Tiff", output + File.separator + originalName + "-preprocessed_" + n + ".tif");
 	
-	selectWindow(duplicateTitle);
-	close(); 
-	selectWindow(ZProjectTitle);
-	close(); 
-	selectWindow(originalName + "-preprocessed_" + n + ".tif");
-	close(); 
+	//selectWindow(duplicateTitle);
+	//close(); 
+	selectWindow(originalTitle); 
+	close("\\Others");
+	//selectWindow(originalName + "-preprocessed_" + n + ".tif");
+	//close(); 
 	
 	crop_option = newArray("Yes", "No");
 	Dialog.create("Repeat crop?");
@@ -124,3 +136,4 @@ function file_name_remove_extension(originalTitle){
 	//print( "Name without extension: " + file_name_without_extension );
 	return file_name_without_extension;
 }
+
