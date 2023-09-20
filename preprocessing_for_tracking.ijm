@@ -27,7 +27,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #@ File (label = "Output directory", style = "directory") output
 #@ String (label = "File Name: ", value = "Video-stills", persist=false) originalTitle
 #@ Integer (label = "BG Subtraction rolling ball radius (px; > fly 'diameter'): ", value = 15, persist=true) rollingBallRadius
-#@ String(label = "Subtract average image? ", choices={"Yes","No"}, style="radioButtonHorizontal") subtractSeriesAverageChoice
+#@ String(label = "Open as virtual stack (requires less memory)", choices={"Yes", "No"}, style="radioButtonHorizontal") virtualStackChoice
+#@ String(label = "Subtract average image? ", choices={"No","Yes"}, style="radioButtonHorizontal") subtractSeriesAverageChoice
 #@ Integer (label = "Frame rate: ", value = 60, persist=true) videoFrameRate
 #@ Double (label = "Number of pixels equating to 2 cm in length: ",  persist=true) xy_calibration_cm
 
@@ -45,7 +46,12 @@ beep();
 function generate_stack_and_save(input, output, originalTitle, videoFrameRate, xy_calibration_cm){
 	interval = 1 / videoFrameRate; 
 	xy_calibration = 20 / xy_calibration_cm;
-	File.openSequence(input);
+	if (virtualStackChoice == "No"){
+		File.openSequence(input);
+	}
+	else if (virtualStackChoice == "Yes"){
+		File.openSequence(input, "virtual");
+	}
 	rename(originalTitle); 
 	Stack.getDimensions(width, height, channels, slices, frames);
 	selectWindow(originalTitle); 
